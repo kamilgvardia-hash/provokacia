@@ -1,9 +1,9 @@
-name: Convert to HEVC Alpha
+name: Convert to PNG Sequence
 on: push
 
 jobs:
   convert:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       
@@ -13,18 +13,14 @@ jobs:
           gdown "12YTdFgk5Mm7sFVpemv2DepnW9D1yFo-O" -O "KRUG4.mov"
       
       - name: Install ffmpeg
-        run: brew install ffmpeg
+        run: sudo apt-get install -y ffmpeg
       
-      - name: Convert to HEVC Alpha
+      - name: Extract PNG frames
         run: |
-          ffmpeg -i "KRUG4.mov" \
-            -c:v hevc_videotoolbox \
-            -allow_sw 1 \
-            -alpha_quality 0.75 \
-            -tag:v hvc1 \
-            "KRUG_HEVC.mov"
+          mkdir -p frames
+          ffmpeg -i "KRUG4.mov" -vf "fps=30,scale=400:-1" -f image2 frames/frame%04d.png
       
       - uses: actions/upload-artifact@v4
         with:
-          name: KRUG_HEVC
-          path: KRUG_HEVC.mov
+          name: frames
+          path: frames/
