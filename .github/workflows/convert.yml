@@ -17,7 +17,12 @@ jobs:
       
       - name: Convert to HEVC Alpha
         run: |
-          ffmpeg -i "KRUG4.mov" -c:v hevc_videotoolbox -alpha_quality 0.75 -allow_sw 1 -tag:v hvc1 "KRUG_HEVC.mov"
+          ffmpeg -i "KRUG4.mov" \
+            -c:v libx265 \
+            -pix_fmt yuva420p \
+            -tag:v hvc1 \
+            -movflags +faststart \
+            "KRUG_HEVC.mov"
       
       - uses: actions/upload-artifact@v4
         with:
