@@ -12,16 +12,13 @@ jobs:
           pip install gdown
           gdown "12YTdFgk5Mm7sFVpemv2DepnW9D1yFo-O" -O "KRUG4.mov"
       
-      - name: Install ffmpeg
-        run: brew install ffmpeg
-      
       - name: Convert to HEVC Alpha
         run: |
           ffmpeg -i "KRUG4.mov" \
-            -c:v libx265 \
-            -pix_fmt yuva420p \
+            -c:v hevc_videotoolbox \
+            -allow_sw 1 \
+            -alpha_quality 0.75 \
             -tag:v hvc1 \
-            -movflags +faststart \
             "KRUG_HEVC.mov"
       
       - uses: actions/upload-artifact@v4
