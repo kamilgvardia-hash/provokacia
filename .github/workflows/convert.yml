@@ -13,7 +13,9 @@ jobs:
           gdown "12YTdFgk5Mm7sFVpemv2DepnW9D1yFo-O" -O "KRUG4.mov"
       
       - name: Install ffmpeg
-        run: sudo apt-get install -y ffmpeg
+        run: |
+          sudo apt-get update --fix-missing
+          sudo apt-get install -y ffmpeg
       
       - name: Extract PNG frames
         run: |
