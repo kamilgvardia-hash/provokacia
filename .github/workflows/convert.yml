@@ -1,4 +1,4 @@
-name: Convert to PNG Sequence
+name: Check WebM
 on: push
 
 jobs:
@@ -7,18 +7,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Download from Google Drive
-        run: |
-          pip install gdown
-          gdown "12YTdFgk5Mm7sFVpemv2DepnW9D1yFo-O" -O "KRUG4.mov"
-      
       - name: Install ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
       
-      - name: Extract PNG frames
+      - name: Check alpha channel
+        run: |
+          ffprobe -v quiet -print_format json -show_streams "KRUG webm.webm"
+      
+      - name: Extract PNG frames from WebM
         run: |
           mkdir -p frames
-          ffmpeg -i "KRUG4.mov" -vf "fps=30,scale=400:-1" -f image2 frames/frame%04d.png
+          ffmpeg -i "KRUG webm.webm" -vf "fps=30,scale=400:-1" -f image2 frames/frame%04d.png
       
       - uses: actions/upload-artifact@v4
         with:
