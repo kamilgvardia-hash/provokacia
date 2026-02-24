@@ -12,6 +12,9 @@ jobs:
           pip install gdown
           gdown "12YTdFgk5Mm7sFVpemv2DepnW9D1yFo-O" -O "KRUG4.mov"
       
+      - name: Install ffmpeg
+        run: brew install ffmpeg
+      
       - name: Convert to HEVC Alpha
         run: |
           ffmpeg -i "KRUG4.mov" \
