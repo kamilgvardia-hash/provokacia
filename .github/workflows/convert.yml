@@ -1,0 +1,25 @@
+name: Convert to HEVC Alpha
+on: push
+
+jobs:
+  convert:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download from Google Drive
+        run: |
+          pip install gdown
+          gdown "12YTdFgk5Mm7sFVpemv2DepnW9D1yFo-O" -O "KRUG4.mov"
+      
+      - name: Install ffmpeg
+        run: brew install ffmpeg
+      
+      - name: Convert to HEVC Alpha
+        run: |
+          ffmpeg -i "KRUG4.mov" -c:v hevc_videotoolbox -alpha_quality 0.75 -allow_sw 1 -tag:v hvc1 "KRUG_HEVC.mov"
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KRUG_HEVC
+          path: KRUG_HEVC.mov
