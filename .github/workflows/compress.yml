@@ -22,14 +22,33 @@ jobs:
         run: |
           DURATION=$(ffprobe -v error -show_entries format=duration \
           -of default=noprint_wrappers=1:nokey=1 "PantH.mov")
-          BITRATE=$(echo "5 * 8192 / $DURATION" | bc)
+          echo "Duration: $DURATION seconds"
+          BITRATE=$(awk "BEGIN {printf \"%d\", 5 * 8192 / $DURATION}")
+          echo "Target bitrate: ${BITRATE}k"
           ffmpeg -i "PantH.mov" \
           -c:v libx265 \
           -b:v ${BITRATE}k \
+          -maxrate ${BITRATE}k \
+          -bufsize $(awk "BEGIN {printf \"%d\", $BITRATE * 2}")k \
           -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
           -pix_fmt yuva420p \
           -tag:v hvc1 \
+          -x265-params "pass=1" \
           "PantH_small.mov"
+          ffmpeg -i "PantH.mov" \
+          -c:v libx265 \
+          -b:v ${BITRATE}k \
+          -maxrate ${BITRATE}k \
+          -bufsize $(awk "BEGIN {printf \"%d\", $BITRATE * 2}")k \
+          -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
+          -pix_fmt yuva420p \
+          -tag:v hvc1 \
+          -x265-params "pass=2" \
+          "PantH_small.mov"
+      
+      - name: Check file size
+        run: |
+          ls -lh PantH_small.mov
       
       - name: Commit compressed file
         run: |
