@@ -18,36 +18,20 @@ jobs:
       - name: Install ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
       
-      - name: Compress HEVC to 5MB
+      - name: Compress MOV with alpha to 5MB
         run: |
           DURATION=$(ffprobe -v error -show_entries format=duration \
           -of default=noprint_wrappers=1:nokey=1 "PantH.mov")
           echo "Duration: $DURATION seconds"
           BITRATE=$(awk "BEGIN {printf \"%d\", 5 * 8192 / $DURATION}")
           echo "Target bitrate: ${BITRATE}k"
-          ffmpeg -i "PantH.mov" \
-          -c:v libx265 \
+          ffmpeg -y -i "PantH.mov" \
+          -c:v prores_ks \
+          -profile:v 4444 \
+          -quant_mat hq \
           -b:v ${BITRATE}k \
-          -maxrate ${BITRATE}k \
-          -bufsize $(awk "BEGIN {printf \"%d\", $BITRATE * 2}")k \
-          -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
-          -pix_fmt yuva420p \
-          -tag:v hvc1 \
-          -x265-params "pass=1" \
+          -pix_fmt yuva444p10le \
           "PantH_small.mov"
-          ffmpeg -i "PantH.mov" \
-          -c:v libx265 \
-          -b:v ${BITRATE}k \
-          -maxrate ${BITRATE}k \
-          -bufsize $(awk "BEGIN {printf \"%d\", $BITRATE * 2}")k \
-          -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
-          -pix_fmt yuva420p \
-          -tag:v hvc1 \
-          -x265-params "pass=2" \
-          "PantH_small.mov"
-      
-      - name: Check file size
-        run: |
           ls -lh PantH_small.mov
       
       - name: Commit compressed file
@@ -55,5 +39,5 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
           git add PantH_small.mov
-          git commit -m "Compressed PantH to 5MB"
+          git commit -m "Compressed PantH MOV with alpha"
           git push
