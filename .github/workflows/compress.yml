@@ -1,4 +1,4 @@
-name: Compress PantH
+name: Compress HEVC
 on: push
 
 jobs:
@@ -7,23 +7,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Download from Google Drive
+        run: |
+          pip install gdown
+          gdown "1rGfGzDoZrwxVEBTyKOo1yGJZlmATvROd" -O "PantH.mov"
+      
       - name: Install ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
       
-      - name: Compress file
+      - name: Compress HEVC with alpha
         run: |
-          ffmpeg -i "PantH_1.mov" \
+          ffmpeg -i "PantH.mov" \
           -c:v libx265 \
           -crf 28 \
           -preset fast \
           -pix_fmt yuva420p \
           -tag:v hvc1 \
-          "PantH_1_small.mov"
+          "PantH_small.mov"
       
       - name: Commit compressed file
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
-          git add PantH_1_small.mov
+          git add PantH_small.mov
           git commit -m "Add compressed PantH"
           git push
