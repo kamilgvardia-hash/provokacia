@@ -7,6 +7,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Download from Google Drive
+        run: |
+          pip install gdown
+          gdown "1K8ru7bzcL3hfR3s1gqBoeWGvmi59QaS_" -O "PantH_.mov"
+      
       - name: Install ffmpeg
         run: brew install ffmpeg
       
