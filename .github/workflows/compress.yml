@@ -23,6 +23,7 @@ jobs:
           ffmpeg -i "PantH.mov" \
           -c:v libx265 \
           -b:v ${BITRATE}k \
+          -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
           -pix_fmt yuva420p \
           -tag:v hvc1 \
           "PantH_small.mov"
