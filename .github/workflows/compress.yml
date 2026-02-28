@@ -1,6 +1,9 @@
 name: Compress HEVC
 on: push
 
+permissions:
+  contents: write
+
 jobs:
   compress:
     runs-on: ubuntu-latest
