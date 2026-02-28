@@ -1,4 +1,4 @@
-name: Compress HEVC
+name: Compress MOV
 on: push
 
 permissions:
@@ -10,22 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Download from Google Drive
-        run: |
-          pip install gdown
-          gdown "1rGfGzDoZrwxVEBTyKOo1yGJZlmATvROd" -O "PantH.mov"
-      
       - name: Install ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
       
       - name: Compress MOV with alpha to 5MB
         run: |
           DURATION=$(ffprobe -v error -show_entries format=duration \
-          -of default=noprint_wrappers=1:nokey=1 "PantH.mov")
+          -of default=noprint_wrappers=1:nokey=1 "PantH_.mov")
           echo "Duration: $DURATION seconds"
           BITRATE=$(awk "BEGIN {printf \"%d\", 5 * 8192 / $DURATION}")
           echo "Target bitrate: ${BITRATE}k"
-          ffmpeg -y -i "PantH.mov" \
+          ffmpeg -y -i "PantH_.mov" \
           -c:v prores_ks \
           -profile:v 4444 \
           -quant_mat hq \
@@ -39,5 +34,5 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
           git add PantH_small.mov
-          git commit -m "Compressed PantH MOV with alpha"
+          git commit -m "Compressed PantH to 5MB"
           git push
