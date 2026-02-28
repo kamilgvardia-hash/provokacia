@@ -15,12 +15,14 @@ jobs:
       - name: Install ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
       
-      - name: Compress HEVC with alpha
+      - name: Compress HEVC to 5MB
         run: |
+          DURATION=$(ffprobe -v error -show_entries format=duration \
+          -of default=noprint_wrappers=1:nokey=1 "PantH.mov")
+          BITRATE=$(echo "5 * 8192 / $DURATION" | bc)
           ffmpeg -i "PantH.mov" \
           -c:v libx265 \
-          -crf 28 \
-          -preset fast \
+          -b:v ${BITRATE}k \
           -pix_fmt yuva420p \
           -tag:v hvc1 \
           "PantH_small.mov"
@@ -30,5 +32,5 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
           git add PantH_small.mov
-          git commit -m "Add compressed PantH"
+          git commit -m "Compressed PantH to 5MB"
           git push
