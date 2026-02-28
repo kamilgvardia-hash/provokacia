@@ -10,22 +10,22 @@ jobs:
       - name: Download from Google Drive
         run: |
           pip install gdown
-          gdown "1K8ru7bzcL3hfR3s1gqBoeWGvmi59QaS_" -O "PantH_.mov"
+          gdown "1H2Bj4BDB7Po3gSV9M29rgS8ECJagFu2-" -O "input.mov"
       
       - name: Install ffmpeg
         run: brew install ffmpeg
       
       - name: Convert to HEVC Alpha
         run: |
-          ffmpeg -i "PantH_.mov" \
+          ffmpeg -i "input.mov" \
             -c:v hevc_videotoolbox \
             -allow_sw 1 \
             -alpha_quality 0.75 \
             -b:v 2000k \
             -tag:v hvc1 \
-            "PantH_small.mov"
+            "output.mov"
       
       - uses: actions/upload-artifact@v4
         with:
-          name: PantH_small
-          path: PantH_small.mov
+          name: output
+          path: output.mov
