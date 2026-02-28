@@ -1,0 +1,29 @@
+name: Compress PantH
+on: push
+
+jobs:
+  compress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install ffmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
+      
+      - name: Compress file
+        run: |
+          ffmpeg -i "PantH_1.mov" \
+          -c:v libx265 \
+          -crf 28 \
+          -preset fast \
+          -pix_fmt yuva420p \
+          -tag:v hvc1 \
+          "PantH_1_small.mov"
+      
+      - name: Commit compressed file
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add PantH_1_small.mov
+          git commit -m "Add compressed PantH"
+          git push
